@@ -23,6 +23,7 @@ export default class Game {
         this.handEle = null
         this.btnBegin = null
         this.btnText = null
+        this.btnText2 = null
         this.score = 0 // 游戏总分
         this.initGameTime = 30 // 游戏总时间
         this.gameTime = 0 // 当前游戏剩余时间
@@ -112,6 +113,24 @@ export default class Game {
         // 设置文本居中对齐
         this.btnText.pivotX = this.btnText.width  / 2
         this.btnText.pivotY = this.btnText.height  / 2
+
+        this.btnText2 = new Hilo.Text({
+            id: 'btnText2',
+            text: '游戏规则：头发+2分，干草和生姜+1分，蛋糕扣1分 零分以及碰到炸弹结束。',
+            color: 'black',
+            font: '35px Arial',
+            textAlign: 'center',
+            height: -250,
+            width: 180,
+            maxWidth: this.width, // 设置文本的最大宽度
+            lineHeight: 2, // 确保文本行高为1，不会换行
+            x: this.width / 2,
+            y: (this.height - btnImg.height ) / 2 + btnImg.height / 4
+        }).addTo(this.stage, 2)
+
+        // 设置文本居中对齐
+        this.btnText2.pivotX = this.btnText2.width  / 2
+        this.btnText2.pivotY = this.btnText2.height  / 2
         this.btnBegin.on(Hilo.event.POINTER_START, this.startGame.bind(this))
     }
 
@@ -122,6 +141,7 @@ export default class Game {
         // 舞台更新
         this.stage.removeChild(this.btnBegin)
         this.stage.removeChild(this.btnText) // 移除文本
+        this.stage.removeChild(this.btnText2) // 移除文本
         this.stage.onUpdate = this.onUpdate.bind(this)
         this.gameTime = this.initGameTime
         this.score = 0
