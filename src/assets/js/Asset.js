@@ -11,6 +11,7 @@ export default Hilo.Class.create({
     hand: null, // 手
     beginBtn: null, // 开始按钮
     logo: null, // logo
+    rule: null, // rule
     load() {
         /* 如使用本地资源，需注意图片是否太小，
         被打成base64到js文件中，这样会无法到达complete状态 */
@@ -24,7 +25,8 @@ export default Hilo.Class.create({
             { id: 'bomb', crossOrigin: true, src: require('../images/bomb.png') },
             { id: 'hand', crossOrigin: true, src: require('../images/hand.png') },
             { id: 'beginBtn', crossOrigin: true, src: require('../images/beginBtn.png') },
-            { id: 'logo', crossOrigin: true, src: require('../images/logo.png') }
+            { id: 'logo', crossOrigin: true, src: require('../images/logo.png') },
+            { id: 'rule', crossOrigin: true, src: require('../images/rules.png') }
         ]
         this.queue = new Hilo.LoadQueue() // 创建下载类。
         this.queue.add(resources)
@@ -43,6 +45,7 @@ export default Hilo.Class.create({
         this.hand = this.queue.get('hand').content
         this.beginBtn = this.queue.get('beginBtn').content
         this.logo = this.queue.get('logo').content
+        this.rule = this.queue.get('rule').content
         this.queue.off('complete') // 删除下载队列的complete事件监听
         this.fire('complete') // 发送事件complete，类似Vue的广播$emit
     }

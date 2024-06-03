@@ -35,6 +35,7 @@ export default {
         closeDialog() {
             this.showEnd = false
             this.startGame = false
+            this.game.initRule()
         }
     },
     watch: {

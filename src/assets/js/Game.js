@@ -22,8 +22,10 @@ export default class Game {
         this.createSpeed = 500 // 初始速度
         this.handEle = null
         this.btnBegin = null
+        this.ruleImgBitMap = null
         this.btnText = null
         this.btnText2 = null
+        this.countdownText = null // 倒计时文本
         this.score = 0 // 游戏总分
         this.initGameTime = 30 // 游戏总时间
         this.gameTime = 0 // 当前游戏剩余时间
@@ -31,7 +33,7 @@ export default class Game {
     }
 
     init() {
-        // 加载资源，加载完毕后，初始话舞台
+        // 加载资源，加载完毕后，初始化舞台
         this.asset.on('complete', function () {
             this.asset.off('complete')
             this.initStage()
@@ -60,6 +62,7 @@ export default class Game {
         this.ticker.start(true)
 
         this.initBg()
+        this.initRule()
         this.initBeginBtn()
     }
 
@@ -81,6 +84,18 @@ export default class Game {
             y: 20, // 上边距20像素
             pointerEnabled: false // 确保 logo 不响应点击事件
         }).addTo(this.stage, 1); // 将 logo 添加到舞台，层级为1
+    }
+
+    //增加规则
+    initRule(){
+        const ruleImg = this.asset.rule;
+        this.ruleImgBitMap = new Hilo.Bitmap({
+            id: 'rule',
+            image: ruleImg,
+            x: 0, // 左边距0像素
+            y: 0, // 上边距0像素
+            pointerEnabled: false // 确保 rule 不响应点击事件
+        }).addTo(this.stage, 2); // 将 rule 添加到舞台，层级为2
     }
 
     // 初始化开始按钮
@@ -131,17 +146,51 @@ export default class Game {
         // 设置文本居中对齐
         this.btnText2.pivotX = this.btnText2.width  / 2
         this.btnText2.pivotY = this.btnText2.height  / 2
-        this.btnBegin.on(Hilo.event.POINTER_START, this.startGame.bind(this))
+        // this.btnBegin.on(Hilo.event.POINTER_START, this.startGame.bind(this))
+
+        // 绑定点击事件显示倒计时
+        this.btnBegin.on(Hilo.event.POINTER_START, this.showCountdown.bind(this))
     }
 
+    // 显示倒计时
+    showCountdown() {
+        this.btnBegin.visible = false
+        this.btnText.visible = false
+        this.btnText2.visible = false
+        this.ruleImgBitMap.visible = false
+
+        let countdown = 3
+        this.countdownText = new Hilo.Text({
+            text: countdown,
+            color: 'red',
+            font: '150px Arial',
+            textAlign: 'center',
+            width: 0,
+            height: 0,
+            x: this.width / 2,
+            y: this.height / 2
+        }).addTo(this.stage, 2)
+
+        const interval = setInterval(() => {
+            countdown -= 1
+            if (countdown <= 0) {
+                clearInterval(interval)
+                this.countdownText.removeFromParent()
+                this.startGame()
+            } else {
+                this.countdownText.text = countdown
+            }
+        }, 1000)
+    }
     // 开始游戏
     startGame() {
         this.initGold()
         this.initHand()
         // 舞台更新
-        this.stage.removeChild(this.btnBegin)
-        this.stage.removeChild(this.btnText) // 移除文本
-        this.stage.removeChild(this.btnText2) // 移除文本
+        // this.stage.removeChild(this.btnBegin)
+        // this.stage.removeChild(this.ruleImgBitMap) // 规则
+        // this.stage.removeChild(this.btnText) // 移除文本
+        // this.stage.removeChild(this.btnText2) // 移除文本
         this.stage.onUpdate = this.onUpdate.bind(this)
         this.gameTime = this.initGameTime
         this.score = 0

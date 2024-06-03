@@ -3,7 +3,7 @@ import GoldBasics from './GoldBasics'
 const Gold = Hilo.Class.create({
     Extends: Hilo.Container,
     timer: null, // 定时器
-
+    elapsedTime: 0, // 已经过的时间
     // 下落元素，如['+2分的资源内容', '+1分的资源内容', '-1的资源内容', '炸弹停止游戏的资源内容']
     dropEleArr: [],
     goldIdList: [], // 下落元素的id列表，用来生成对应的下落元素类型
@@ -20,6 +20,7 @@ const Gold = Hilo.Class.create({
         // 因为初始速度为0，所以需要先创建第一个金币
         this.createGold()
         this.beginCreateGold()
+        this.startGameTimer() // 开始游戏计时器
     },
     random (lower, upper) {
         return Math.floor(Math.random() * (upper - lower + 1)) + lower
@@ -34,6 +35,8 @@ const Gold = Hilo.Class.create({
     createGold () {
         // 生成元素的类型
         let typeIndex = null
+        const isEarlyStage = this.elapsedTime < 10; // 判断是否为前10秒
+
         switch (this.goldIdList[this.idIndex]) {
         case '2':
             typeIndex = 0
@@ -45,9 +48,19 @@ const Gold = Hilo.Class.create({
             typeIndex = 2
             break
         case '0':
+            if (isEarlyStage) {
+                this.idIndex++;
+                this.createGold(); // 如果在前10秒，跳过此元素，生成下一个
+                return;
+            }
             typeIndex = 4
             break
         default:
+            if (isEarlyStage) {
+                this.idIndex++;
+                this.createGold(); // 如果在前10秒，跳过此元素，生成下一个
+                return;
+            }
             typeIndex = 3
             break
         }
@@ -94,6 +107,7 @@ const Gold = Hilo.Class.create({
     stopCreateGold () {
         clearInterval(this.timer)
         this.removeAllChildren()
+        this.elapsedTime = 0 // 重置已过时间
     },
     // 碰撞检测
     checkCollision (ele) {
@@ -105,6 +119,13 @@ const Gold = Hilo.Class.create({
             }
         }
         return false
+    },
+    // 开始游戏计时器
+    startGameTimer() {
+        this.elapsedTime = 0
+        this.gameTimer = setInterval(() => {
+            this.elapsedTime++
+        }, 1000)
     }
 })
 export default Gold
